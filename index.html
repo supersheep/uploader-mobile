@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Uploader</title>
+    <script src="./neurons/neuron/5.1.0/neuron.js"></script>
+    <script>
+
+        neuron.config({
+            path:"./neurons"
+        });
+
+    </script>
+
+    <style>
+        body{
+            font-family: "Hiragino Sans GB","Microsoft Yahei",sarif;
+            font-size: 12px;
+        }
+        #uploader_wrap{
+            display: inline-block;
+            width: 250px;
+            height: 40px;
+            color:#fff;
+            background-color: #39d;
+            text-decoration: none;
+            text-align:center;
+            line-height: 40px;
+        }
+
+        #uploader_wrap:hover{
+            background-color: #4ac;
+        }
+
+
+
+        /* upload styles */
+        #queue{
+            width: 300px;
+        }
+        #queue li{
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    
+    
+    <a id="uploader_wrap" href="javascript:;">上传</a>
+    <ul id="queue">
+        <li id="J_upload_item_SWFUpload_0_0">
+            <div class="pic"><img src="http://127.0.0.1:1234/res/dev-and-pro.png" alt=""></div>
+            <div class="name">恐龙.jpg</div>
+            <div class="progress">
+                <div class="percent" style="background-color:#39d;"></div>
+            </div>
+            <div class="status ok">成功</div>
+        </li>
+        <li id="J_upload_item_SWFUpload_0_0">
+            <div class="name">恐龙.jpg</div>
+            <div class="progress">
+                <div class="percent" style="background-color:#39d;"></div>
+            </div>
+            <div class="status ok">失败</div>
+        </li>
+    </ul>
+
+    <script>
+        _use("uploader",function(Uploader){
+            var uploader = new Uploader("#uploader_wrap",{
+                action:"http://127.0.0.1:1339",
+                swf_config:{
+                    flash_url:"http://127.0.0.1:1234/res/swfupload.swf"
+                }
+            }).on("select",function(){
+                this.upload();
+            }).on("success",function(){
+                console.log("success");
+            });
+
+            
+            
+        });
+    </script>
+</body>
+</html>
