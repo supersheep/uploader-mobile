@@ -28,7 +28,7 @@ function FlashUploader(elem,config){
 
     var handlers = {
         file_dialog_complete_handler:function(numFilesSelected, numFilesQueued, numFilesInQueue){
-            var stats = this.getStats();
+            console.log(arguments);
             var files = [];
             var stats = this.getStats();
             var total = _.reduce(_.values(stats),function(a,b){
@@ -46,8 +46,13 @@ function FlashUploader(elem,config){
                 file:file
             });
         },
-        file_queued_handler:function(file){},
-        file_queue_error_handler:function(file,code,message){},
+        file_queued_handler:function(file){
+            console.log("queued",file);
+        },
+        file_queue_error_handler:function(file,code,message){
+
+            console.log("queued error",file);
+        },
         upload_progress_handler:function(file,uploaded,total){
             self.emit("progress",{
                 file:file,
@@ -74,7 +79,7 @@ function FlashUploader(elem,config){
             try{
                 data = JSON.parse(data);
             }catch(e){
-                self.emit("success",{
+                self.emit("error",{
                     file:file,
                     code:"-300",
                     message:"error parsing JSON"
@@ -87,9 +92,7 @@ function FlashUploader(elem,config){
                 res:response
             });
         },
-        upload_complete_handler:function(){
-            console.log(arguments);
-        }
+        upload_complete_handler:function(){}
     };
 
 

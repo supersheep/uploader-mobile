@@ -18,6 +18,7 @@ function Template(container){
                 <div class="progress">\
                     <div class="percent" style="background-color:#39d;"></div>\
                 </div>\
+                <span class="remove">x</span>\
             </li>';
 
     this.set('tpl',tpl);
@@ -30,14 +31,20 @@ attributes.patch(Template,{
 
 
 Template.prototype._createItem = function(event){
+    var self = this;
     var container = this.container;
     var file = event.file;
     var item = $(_.template(this.get('tpl'),file));
+    item.find(".remove").on("click",function(){
+        var uploader = self.get("uploader");
+        uploader.get("queue").remove(file.id);
+    });
     file.block = item;
     item.appendTo(container);
 };
 
-Template.prototype._removeItem = function(file){
+Template.prototype._removeHandler = function(e){
+    var file = e.file;
     file.block && file.block.remove();
 }
 

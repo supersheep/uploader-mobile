@@ -39,7 +39,7 @@ function Uploader(element,config){
             queue.add(file);
         });
         if (!curId && self.get('autoUpload')) {
-            self.upload(queue.getIndexes("waiting")[0]);
+            self.upload(queue.getIds("waiting")[0]);
         }
     });
 
@@ -106,11 +106,10 @@ attributes.patch(Uploader,{
     currentIndex:{value:''},
 });
 
-Uploader.prototype.upload = function(index){
+Uploader.prototype.upload = function(id){
     var type = this.type = this._getType();
-
     this.emit("start");
-    this.get("adapter").upload(index);
+    this.get("adapter").upload(id);
 }
 
 
@@ -135,13 +134,10 @@ Uploader.prototype._initQueue = function () {
 Uploader.prototype.theme = function(theme){
     var self = this;
     var queue = this.get('queue');
+    theme.set('uploader',self);
     self.on('add',function(file){
         theme._createItem(file);
     });
-
-    self.on('remove',function(file){
-        theme._removeItem(file);
-    })
 
     _.forEach(['add','remove','start','progress','success','error','complete'],function(ev){
         self.on(ev,function(e){
@@ -164,7 +160,7 @@ Uploader.prototype._processExceedMultiple = function (files) {
 
 Uploader.prototype._continue = function(){
     var queue = this.get("queue");
-    this.upload(queue.getIndexes("waiting")[0]);
+    this.upload(queue.getIds("waiting")[0]);
 }
 
 Uploader.prototype._getType = function(){

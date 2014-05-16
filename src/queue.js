@@ -17,55 +17,53 @@ attributes.patch(Queue,{
     files:{value:[]}
 });
 
-Queue.prototype.getFile = function (indexOrId) {
+Queue.prototype.getFile = function (id) {
     var self = this;
-    var file;
     var files = self.get('files');
-    if(_.isNumber(indexOrId)){
-        file = files[indexOrId];
-    }else{
-        _.forEach(files, function (f) {
-            if (f.id == indexOrId) {
-                file = f;
-                return true;
-            }
-        });
-    }
-    return file;
+    return _.filter(files,function(file){
+        return file.id == id;
+    })[0];
 };
 
-Queue.prototype.getIndexes = function(status){
+Queue.prototype.getIds = function(status){
     var files = this.get("files");
     function matchStatus(file){
         return file.status == status;
     }
 
-    function getIdOrIndex(file){
-        return file.id || file.index;
+    function getId(file){
+        return file.id;
     }
 
-    return _.map(_.filter(files,matchStatus),getIdOrIndex);
+    return _.map(_.filter(files,matchStatus),getId);
 };
 
-Queue.prototype.remove = function(indexOrId){
+Queue.prototype.remove = function(id){
     var files = this.get("files");
-    var index;
-    if(_.isString(indexOrId)){
-        index = this.getFileIndex(indexOrId);
-    }
-}
+    if(!files){return;}
+    if(!id){id = files[0].id}
+    var new_files = [];
+    var file;
+    _.forEach(files,function(f){
+        if(f.id == id){
+            file = f;
+        }else{
+            new_files.push(f);
+        }
+    });
 
-Queue.prototype.getFileIndex = function(id){
-    var files = this.get("files");
-    return _.filter(files,function(file){
-        return file.id == id;
-    })[0];
+    if(file){
+        this.set("files",new_files);
+        this.emit("remove",{
+            file:file
+        });
+    }
 }
 
 Queue.prototype.updateFileStatus = function(file,status){
-    var id = file.id || file.index;
-    file = this.getFile(id);
+    file = this.getFile(file.id);
     file.status = status;
+    return true;
 }
 
 Queue.prototype.clear = function(){
@@ -74,7 +72,7 @@ Queue.prototype.clear = function(){
     function _remove(){
         var files = self.get("files");
         if(files.length){
-            self.remove(0);
+            self.remove();
             _remove();
         }else{
             self.fire("clear");
