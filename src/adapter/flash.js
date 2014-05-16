@@ -5,10 +5,24 @@ var _ = require("underscore");
 var util = require("util");
 var JSON = require("json");
 
+var ERRORS = {
+    "-200" : "HTTP_ERROR"                  ,
+    "-210" : "MISSING_UPLOAD_URL"          ,
+    "-220" : "IO_ERROR"                    ,
+    "-230" : "SECURITY_ERROR"              ,
+    "-240" : "UPLOAD_LIMIT_EXCEEDED"       ,
+    "-250" : "UPLOAD_FAILED"               ,
+    "-260" : "SPECIFIED_FILE_ID_NOT_FOUND" ,
+    "-270" : "FILE_VALIDATION_FAILED"      ,
+    "-280" : "FILE_CANCELLED"              ,
+    "-290" : "UPLOAD_STOPPED"              ,
+    "-300" : "JSON_PARSE_FAILED"
+}
 
 var default_options = require("./flash_default_options");
 
 module.exports = FlashUploader;
+FlashUploader.errors = ERRORS;
 function FlashUploader(elem,config){
     var self = this;
 
@@ -16,7 +30,11 @@ function FlashUploader(elem,config){
         file_dialog_complete_handler:function(numFilesSelected, numFilesQueued, numFilesInQueue){
             var stats = this.getStats();
             var files = [];
-            for(var i = 0; i < numFilesSelected; i++){
+            var stats = this.getStats();
+            var total = _.reduce(_.values(stats),function(a,b){
+                return a+b;
+            },0);
+            for(var i = total - numFilesSelected; i < total; i++){
                 files.push(this.getFile(i));
             }
             self.emit("select",{
@@ -52,13 +70,26 @@ function FlashUploader(elem,config){
         // The response returned by the server—true on success or false if no response.
         // If false is returned, after the successTimeout option expires, a response of true is assumed.
         upload_success_handler:function(file,data,response){
+            var data;
+            try{
+                data = JSON.parse(data);
+            }catch(e){
+                self.emit("success",{
+                    file:file,
+                    code:"-300",
+                    message:"error parsing JSON"
+                });
+                return;
+            }
             self.emit("success",{
                 file:file,
-                data:JSON.parse(data),
+                data:data,
                 res:response
             });
         },
-        upload_complete_handler:function(file){}
+        upload_complete_handler:function(){
+            console.log(arguments);
+        }
     };
 
 
@@ -87,9 +118,9 @@ util.inherits(FlashUploader,events);
 FlashUploader.instanceCount = 0;
 
 
-FlashUploader.prototype.upload = function(index){
+FlashUploader.prototype.upload = function(indexOrId){
 
-    this.swfu.startUpload();
+    this.swfu.startUpload(indexOrId);
 }
 
 FlashUploader.prototype.cancel = function(){

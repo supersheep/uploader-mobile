@@ -36,34 +36,70 @@
 
         /* upload styles */
         #queue{
-            width: 300px;
+            padding:0;
+            width: 250px;
         }
         #queue li{
+            list-style-type: none;
             margin-bottom: 10px;
         }
 
+
+        #queue li:after{
+            content:"";
+            display:block;
+            clear:both;
+        }
+
+        #queue li .pic{
+            float: left;
+        }
+
+        #queue li .pic img{
+            width: 50px;
+            height: 50px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        #queue li .name{
+            float: left;
+        }
+
+        #queue li .status{
+            float: right;
+        }
+
+
+        #queue li .progress{
+            position: relative;
+            top: 2px;
+            float:right;
+            background-color: #e8e8e8;
+            width: 75px;
+            height: 15px;
+            margin-right: 10px;
+        }
+
+        #queue li .progress .percent{
+            background-color: #39d;
+            height: 100%;
+            width: 0%;
+        }
+        #queue li .ok{
+            color: #2a3;
+        }
+
+        #queue li .fail{
+            color: #a22;
+        }
     </style>
 </head>
 <body>
-    
-    
+
+
     <a id="uploader_wrap" href="javascript:;">上传</a>
     <ul id="queue">
-        <li id="J_upload_item_SWFUpload_0_0">
-            <div class="pic"><img src="http://127.0.0.1:1234/res/dev-and-pro.png" alt=""></div>
-            <div class="name">恐龙.jpg</div>
-            <div class="progress">
-                <div class="percent" style="background-color:#39d;"></div>
-            </div>
-            <div class="status ok">成功</div>
-        </li>
-        <li id="J_upload_item_SWFUpload_0_0">
-            <div class="name">恐龙.jpg</div>
-            <div class="progress">
-                <div class="percent" style="background-color:#39d;"></div>
-            </div>
-            <div class="status ok">失败</div>
-        </li>
     </ul>
 
     <script>
@@ -71,16 +107,21 @@
             var uploader = new Uploader("#uploader_wrap",{
                 action:"http://127.0.0.1:1339",
                 swf_config:{
-                    flash_url:"http://127.0.0.1:1234/res/swfupload.swf"
+                    file_post_name:"key"
+                    // flash_url:"http://127.0.0.1:1234/res/swfupload.swf"
                 }
-            }).on("select",function(){
-                this.upload();
-            }).on("success",function(){
-                console.log("success");
+            }).on("select",function(e){
+                console.log("select",e);
+            }).on("success",function(e){
+                console.log("success",e);
+            }).on("error",function(e){
+                console.log("error",e);
+            }).on("complete",function(e){
+                console.log("complete",e);
             });
 
-            
-            
+
+
         });
     </script>
 </body>

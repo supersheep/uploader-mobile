@@ -28,23 +28,43 @@ function Uploader(element,config){
     this._initQueue();
 
     adapter.on("select",function(e){
-        var queue = self.get('queue');
-        self.emit("select",e);
+        var queue = self.get('queue'),
+            curId = self.get('currentIndex'),
+            files = e.files;
+
+        files = self._processExceedMultiple(files);
+        self.emit("select",{files:files});
+
         _.forEach(e.files,function(file){
             queue.add(file);
         });
-    });
-
-    adapter.on("success",function(e){
-        self.emit("success",e);
+        if (!curId && self.get('autoUpload')) {
+            self.upload(queue.getIndexes("waiting")[0]);
+        }
     });
 
     adapter.on("progress",function(e){
         self.emit("progress",e);
     });
 
+    adapter.on("success",function(e){
+        var queue = self.get("queue");
+        queue.updateFileStatus(e.file,"success");
+        self.emit("success",e);
+        self.emit("complete",e);
+    });
+
     adapter.on("error",function(e){
+        var queue = self.get("queue");
+        queue.updateFileStatus(e.file,"error");
         self.emit("error",e);
+        self.emit("complete",e);
+    });
+
+    self.on("complete",function(e){
+        var queue = self.get("queue");
+        var file = e.file;
+        self._continue();
     });
 
     this.set("adapter",adapter);
@@ -54,8 +74,36 @@ function Uploader(element,config){
 
 util.inherits(Uploader,events);
 attributes.patch(Uploader,{
+    /**
+     * 是否自动上传
+     * @type Boolean
+     * @default true
+     */
+    autoUpload:{value:true},
+    /**
+     * Queue队列的实例
+     * @type Queue
+     * @default {}
+     */
     queue:{value:{}},
-    adapter:{value:{}}
+    /**
+     * 上传方式实例
+     * @type UploaderType
+     * @default {}
+     */
+    adapter:{value:{}},
+    /**
+     * 用于限制多选文件个数，值为负时不设置多选限制
+     * @type Number
+     * @default -1
+     */
+    multipleLen:{value:-1},
+    /**
+     *  当前上传的文件对应的在数组内的索引值，如果没有文件正在上传，值为空
+     *  @type Number
+     *  @default ""
+     */
+    currentIndex:{value:''},
 });
 
 Uploader.prototype.upload = function(index){
@@ -101,6 +149,22 @@ Uploader.prototype.theme = function(theme){
             func && func.call(self,e);;
         });
     });
+}
+
+/**
+ * 超过最大多选数予以截断
+ */
+Uploader.prototype._processExceedMultiple = function (files) {
+    var self = this, multipleLen = self.get('multipleLen');
+    if (multipleLen < 0 || !_.isArray(files) || !files.length) return files;
+    return S.filter(files, function (file, index) {
+        return index < multipleLen;
+    });
+};
+
+Uploader.prototype._continue = function(){
+    var queue = this.get("queue");
+    this.upload(queue.getIndexes("waiting")[0]);
 }
 
 Uploader.prototype._getType = function(){

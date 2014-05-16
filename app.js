@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
 var multipart = require('connect-multiparty');
+var fs = require('fs');
 
 var upload = express();
 
@@ -14,8 +15,28 @@ upload.get('/crossdomain.xml', function(req, res){
 });
 
 
+var count = 0;
 upload.all('/',multipart(),function(req,res){
-    res.send(req.files);
+    var file = req.files.key;
+    var tmp_path = file.path;
+    var target_path = './res/' + file.name;
+
+    count++;
+    if(count%2){
+        return res.send(500,"oops");
+    }
+    // move the file from the temporary location to the intended location
+    fs.rename(tmp_path, target_path, function(err) {
+        if (err) return res.send(500,err);
+        // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
+        fs.unlink(tmp_path, function() {
+            if (err) return res.send(500,err);
+            res.send({
+                path: "/res/" + file.name,
+                size: file.size
+            });
+        });
+    });
 });
 
 upload.listen(1339);

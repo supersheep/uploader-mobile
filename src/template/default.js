@@ -11,12 +11,14 @@ function Template(container){
 
     var self = this;
 
-    var tpl = "<li id='J_upload_item_<%=id%>'><%=name%>"
-        +"<div class='progress'>"
-            +"<div class='percent' style='background-color:#39d;'></div>"
-        "</div>"
-    +"</li>";
-
+     var tpl = '<li id="J_upload_item_<%=id%>">\
+                <div class="pic" style="display:none"><img /></div>\
+                <div class="name"><%=name%></div>\
+                <div class="status"></div>\
+                <div class="progress">\
+                    <div class="percent" style="background-color:#39d;"></div>\
+                </div>\
+            </li>';
 
     this.set('tpl',tpl);
 }
@@ -39,19 +41,29 @@ Template.prototype._removeItem = function(file){
     file.block && file.block.remove();
 }
 
-Template.prototype._progressHandler = function(file){
-    var elem = $(".J_upload_item_"+file.id);
-    elem.find(".percent");
+Template.prototype._progressHandler = function(e){
+    var file = e.file;
+    var elem = $("#J_upload_item_" + file.id);
+    elem.find(".percent").css("width",e.uploaded/e.total*100 + "%");
 }
 
-Template.prototype._successHandler = function(){
-
+Template.prototype._successHandler = function(e){
+    var file = e.file;
+    var data = e.data;
+    var elem = $("#J_upload_item_" + file.id);
+    elem.find(".pic").show();
+    elem.find("img").attr("src",data.path);
+    elem.find(".progress").hide();
+    elem.find(".status").addClass("ok").html("成功");
 }
 
-Template.prototype._completeHandler = function(){
-
+Template.prototype._completeHandler = function(e){
 }
 
-Template.prototype._errorHandler = function(){
-
+Template.prototype._errorHandler = function(e){
+    var file = e.file;
+    var data = e.data;
+    var elem = $("#J_upload_item_" + file.id);
+    elem.find(".progress").hide();
+    elem.find(".status").addClass("fail").html("失败");
 }

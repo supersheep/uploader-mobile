@@ -7,6 +7,9 @@ module.exports = {
     file_types_description : "All Files",
     file_post_name: "file",
     file_upload_limit : 0,
+    // Due to some bugs in the Flash Player the server response may not be acknowledged and no uploadSuccess event is fired by Flash.
+    // set this value to 0, SWFUpload will wait indefinitely for the Flash Player to trigger the uploadSuccess event.
+    assume_success_timeout: 0,
     custom_settings : {
         progressTarget : "fsUploadProgress",
         cancelButtonId : "btnCancel"
