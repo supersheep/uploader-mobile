@@ -121,9 +121,12 @@ function FlashUploader(elem, config){
     var id = FlashUploader._renderButton(elem);
 
     var custom_configs = {
+        post_params: config.data || {},
         upload_url: config.action,
         file_queue_limit : config.limit,
         button_placeholder_id: id,
+        file_types:config.types || "*.jpg;*.png;*.bmp",
+        file_post_name: config.name || "file",
         button_width: elem.width(),
         button_height: elem.height()
     }

@@ -68,6 +68,7 @@ Template.prototype._completeHandler = function(e){
 }
 
 Template.prototype._errorHandler = function(e){
+    console.log("ERROR",e);
     var file = e.file;
     var data = e.data;
     var elem = $("#J_upload_item_" + file.id);
