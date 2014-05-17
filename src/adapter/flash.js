@@ -35,7 +35,7 @@ function FlashUploader(elem, config){
             var stats = this.getStats();
             var total = _.reduce(_.values(stats),function(a,b){
                 return a+b;
-            },0);
+            },0) - stats.in_progress;
             for(var i = total - numFilesSelected; i < total; i++){
                 files.push(this.getFile(i));
             }
