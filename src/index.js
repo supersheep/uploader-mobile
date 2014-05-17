@@ -27,6 +27,10 @@ function Uploader(element,config){
 
     this._initQueue();
 
+    adapter.on("load",function(){
+        self.emit("load");
+    })
+
     adapter.on("select",function(e){
         var queue = self.get('queue'),
             curId = self.get('currentIndex'),
@@ -144,7 +148,7 @@ Uploader.prototype.theme = function(theme){
         theme._createItem(file);
     });
 
-    _.forEach(['add','remove','start','progress','success','error','complete'],function(ev){
+    _.forEach(['load','add','remove','start','progress','success','error','complete'],function(ev){
         self.on(ev,function(e){
             var func = theme["_" + ev + "Handler"];
             func && func.call(self,e);;

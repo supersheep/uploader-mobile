@@ -29,6 +29,9 @@ function FlashUploader(elem, config){
     var isSuccess = _.isFunction(config.isSuccess) ? config.isSuccess : function(){return true;};
 
     var handlers = {
+        swfupload_loaded_handler:function(){
+            self.emit("load");
+        },
         file_dialog_complete_handler:function(numFilesSelected, numFilesQueued, numFilesInQueue){
             console.log(arguments);
             var files = [];
