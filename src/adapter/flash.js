@@ -16,15 +16,17 @@ var ERRORS = {
     "-270" : "FILE_VALIDATION_FAILED"      ,
     "-280" : "FILE_CANCELLED"              ,
     "-290" : "UPLOAD_STOPPED"              ,
-    "-300" : "JSON_PARSE_FAILED"
-}
+    "-300" : "JSON_PARSE_FAILED"           ,
+    "-310" : "CUSTOM_DEFINED_ERROR"
+};
 
 var default_options = require("./flash_default_options");
 
 module.exports = FlashUploader;
 FlashUploader.errors = ERRORS;
-function FlashUploader(elem,config){
+function FlashUploader(elem, config){
     var self = this;
+    var isSuccess = _.isFunction(config.isSuccess) ? config.isSuccess : function(){return true;};
 
     var handlers = {
         file_dialog_complete_handler:function(numFilesSelected, numFilesQueued, numFilesInQueue){
@@ -37,6 +39,13 @@ function FlashUploader(elem,config){
             for(var i = total - numFilesSelected; i < total; i++){
                 files.push(this.getFile(i));
             }
+
+
+            console.log("stats",stats);
+            console.log("total",total);
+            console.log("args",arguments);
+
+
             self.emit("select",{
                 files:files
             });
@@ -76,6 +85,8 @@ function FlashUploader(elem,config){
         // If false is returned, after the successTimeout option expires, a response of true is assumed.
         upload_success_handler:function(file,data,response){
             var data;
+
+
             try{
                 data = JSON.parse(data);
             }catch(e){
@@ -86,11 +97,21 @@ function FlashUploader(elem,config){
                 });
                 return;
             }
-            self.emit("success",{
-                file:file,
-                data:data,
-                res:response
-            });
+
+            if(!isSuccess(data)){
+                self.emit("error",{
+                    file:file,
+                    code:"-310",
+                    message:"error custom",
+                    data:data
+                })
+            }else{
+                self.emit("success",{
+                    file:file,
+                    data:data,
+                    res:response
+                });
+            }
         },
         upload_complete_handler:function(){}
     };

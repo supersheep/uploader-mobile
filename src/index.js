@@ -35,6 +35,7 @@ function Uploader(element,config){
         files = self._processExceedMultiple(files);
         self.emit("select",{files:files});
 
+        console.log("e.files.....",e.files);
         _.forEach(e.files,function(file){
             queue.add(file);
         });
@@ -44,6 +45,9 @@ function Uploader(element,config){
     });
 
     adapter.on("progress",function(e){
+        var queue = self.get("queue");
+        console.log("e.file",e.file);
+        queue.updateFileStatus(e.file,"progress");
         self.emit("progress",e);
     });
 
@@ -104,6 +108,7 @@ attributes.patch(Uploader,{
      *  @default ""
      */
     currentIndex:{value:''},
+    isSuccess:{value:function(){return true;}}
 });
 
 Uploader.prototype.upload = function(id){
