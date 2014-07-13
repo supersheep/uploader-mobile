@@ -48,10 +48,11 @@ function FlashUploader(elem, config){
             console.log("total",total);
             console.log("args",arguments);
 
-
-            self.emit("select",{
-                files:files
-            });
+            if(files.length){
+                self.emit("select",{
+                    files:files
+                });
+            }
         },
         upload_start_handler:function(file){
             self.emit("start",{

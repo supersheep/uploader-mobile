@@ -62,7 +62,9 @@ Queue.prototype.remove = function(id){
 
 Queue.prototype.updateFileStatus = function(file,status){
     file = this.getFile(file.id);
-    file.status = status;
+    if(file){
+        file.status = status;
+    }
     return true;
 }
 

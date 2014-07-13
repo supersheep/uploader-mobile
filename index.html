@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Uploader</title>
-    <script src="./neurons/neuron/5.1.0/neuron.js"></script>
+    <script src="./neurons/neuron.js"></script>
+    <script src="./neurons/config.js"></script>
     <script>
 
         neuron.config({
@@ -105,16 +106,21 @@
 <body>
 
 
-    <a id="uploader_wrap" href="javascript:;">上传</a>
+    <a id="uploader_wrap" href="javascript:;"><span class="text">加载中</span></a>
     <ul id="queue">
     </ul>
 
     <script>
+        _use("jquery@1.9.1",function($){
         _use("uploader",function(Uploader){
             var uploader = new Uploader("#uploader_wrap",{
                 action:"http://127.0.0.1:1339",
+                name:"key",
+                isSuccess:function(data){
+                    return data.code == 200;
+                },
+                // theme: require('...')
                 swf_config:{
-                    file_post_name:"key",
                     flash_url:"http://127.0.0.1:1234/res/swfupload2.5.swf"
                 }
             }).on("select",function(e){
@@ -127,10 +133,10 @@
                 console.log("complete",e);
             }).on("remove",function(e){
                 console.log("remove",e);
+            }).on("load",function(){
+                $("#uploader_wrap .text").text("上传");
             });
-
-
-
+        });
         });
     </script>
 </body>

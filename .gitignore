@@ -2,6 +2,7 @@
 build/
 .cortex/
 res/*.jpg
+res/*.png
 neurons/
 # PHP files
 index.php

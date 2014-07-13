@@ -22,7 +22,12 @@ upload.all('/',multipart(),function(req,res){
     var target_path = './res/' + file.name;
 
     count++;
-    if(count%2){
+    if(count%3 == 0){
+        return res.send(200,{
+            code: 500,
+            message: "something wrong happened"
+        });
+    }else if(count%3 == 1){
         return res.send(500,"oops");
     }
     // move the file from the temporary location to the intended location
@@ -31,20 +36,24 @@ upload.all('/',multipart(),function(req,res){
         // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
         fs.unlink(tmp_path, function() {
             if (err) return res.send(500,err);
-            res.send({
-                path: "/res/" + file.name,
-                size: file.size
-            });
+            setTimeout(function(){
+                res.send({
+                    code: 200,
+                    path: "/res/" + file.name,
+                    size: file.size
+                });
+            },2000);
         });
     });
 });
 
 upload.listen(1339);
 
-
+console.log("upload server started at 1339");
 
 
 var web = express();
 web.use(express.static(__dirname))
 web.listen(1234);
+console.log("upload server started at 1234");
 

@@ -6,7 +6,6 @@ var $ = require("jquery");
 var Queue = require("./queue");
 var _ = require("underscore");
 var attributes = require("attributes");
-var Theme = require("./template/default");
 
 module.exports = Uploader;
 
@@ -18,6 +17,8 @@ var adapters = {
 
 
 function Uploader(element,config){
+
+    var Theme = config.theme || require("./template/default");
     var self = this;
 
     this.type = config.type || "flash";
@@ -112,6 +113,7 @@ attributes.patch(Uploader,{
      *  @default ""
      */
     currentIndex:{value:''},
+    isAllowUpload:{value:true},
     isSuccess:{value:function(){return true;}}
 });
 
