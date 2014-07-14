@@ -142,7 +142,7 @@ Uploader.prototype.upload = function(file){
         this._continue();
     }else{
         if(beforeUpload){
-            beforeUpload.call(self, file, _.bind(this._upload,this));
+            beforeUpload.call(self, file, _.bind(this._upload,this,file));
         }else{
             this._upload(file);
         }
