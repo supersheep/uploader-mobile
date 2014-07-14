@@ -11,9 +11,8 @@ module.exports = Uploader;
 
 var adapters = {
     flash : require("./adapter/flash"),
-    ajax : require("./adapter/ajax"),
-    iframe: require("./adapter/iframe")
-}
+    ajax : require("./adapter/ajax")
+};
 
 
 function Uploader(element,config){
@@ -25,10 +24,11 @@ function Uploader(element,config){
 
     this.set('autoUpload',config.autoUpload);
     this.set('queueTarget',config.queueTarget);
+    this.set('beforeUpload',config.beforeUpload);
     this.set('data',config.data);
 
     var adapter = new adapters[this.type](element,config);
-
+    adapter.set("uploader", this);
     // 初始化上传队列
 
     this._initQueue();
@@ -54,6 +54,7 @@ function Uploader(element,config){
     });
 
     adapter.on('start',function(e){
+        self.emit("start",e);
         self.set('currentId',e.file.id);
     });
 
@@ -80,9 +81,7 @@ function Uploader(element,config){
     self.on("complete",function(e){
         var queue = self.get("queue");
         var file = e.file;
-        if(self.get("autoUpload")){
-            self._continue();
-        }
+        self._continue();
     });
 
     this.set("adapter",adapter);
@@ -93,13 +92,21 @@ function Uploader(element,config){
 util.inherits(Uploader,events);
 attributes.patch(Uploader,{
     queueTarget:{value:'#queue'},
+    beforeUpload:{value:function(){}},
     data:{value:{}},
     /**
      * 是否自动上传
      * @type Boolean
      * @default true
      */
-    autoUpload:{value:true},
+    autoUpload:{
+        value:true,
+        setter:function(v){
+            if(v===undefined){
+                return true
+            }
+        }
+    },
     /**
      * Queue队列的实例
      * @type Queue
@@ -128,17 +135,29 @@ attributes.patch(Uploader,{
     isSuccess:{value:function(){return true;}}
 });
 
-Uploader.prototype.upload = function(id){
-    this.emit("start");
-    var adapter = this.get("adapter");
-    if(!id){
+Uploader.prototype.upload = function(file){
+    var self = this;
+    var beforeUpload = this.get('beforeUpload');
+    if(!file){
         this._continue();
     }else{
-        adapter.setData(this.get("data"));
-        adapter.upload(id);
+        if(beforeUpload){
+            beforeUpload.call(self, file, _.bind(this._upload,this));
+        }else{
+            this._upload(file);
+        }
     }
 }
 
+Uploader.prototype._upload = function(file){
+    var adapter = this.get("adapter");
+    this.get("data") && adapter.setData(this.get("data"));
+    adapter.upload(file);
+}
+
+Uploader.prototype.remove = function(id){
+    this.get("queue").remove(id);
+}
 
 Uploader.prototype._initQueue = function () {
     var self = this, queue = new Queue();
@@ -187,9 +206,9 @@ Uploader.prototype._processExceedMultiple = function (files) {
 
 Uploader.prototype._continue = function(){
     var queue = this.get("queue");
-    var id = queue.getIds("waiting")[0];
-    if(id){
-        this.upload(id);
+    var file = queue.getFilesByStatus("waiting")[0];
+    if(file){
+        this.upload(file);
     }else{
         this.set('currentId',null);
     }

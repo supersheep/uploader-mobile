@@ -4,6 +4,7 @@ var events = require("events");
 var _ = require("underscore");
 var util = require("util");
 var JSON = require("json");
+var attributes = require("attributes");
 
 var ERRORS = {
     "-200" : "HTTP_ERROR"                  ,
@@ -103,8 +104,7 @@ function FlashUploader(elem, config){
             }else{
                 self.emit("success",{
                     file:file,
-                    data:data,
-                    res:response
+                    data:data
                 });
             }
         },
@@ -137,11 +137,14 @@ function FlashUploader(elem, config){
 };
 
 util.inherits(FlashUploader,events);
+attributes.patch(FlashUploader,{
+    upload:{value:{}},
+});
 FlashUploader.instanceCount = 0;
 
 
-FlashUploader.prototype.upload = function(indexOrId){
-    this.swfu.startUpload(indexOrId);
+FlashUploader.prototype.upload = function(file){
+    this.swfu.startUpload(file.id);
 }
 
 FlashUploader.prototype.setData = function(data){

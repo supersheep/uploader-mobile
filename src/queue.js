@@ -17,7 +17,7 @@ attributes.patch(Queue,{
     files:{value:[]}
 });
 
-Queue.prototype.getFile = function (id) {
+Queue.prototype.getFileById = function (id) {
     var self = this;
     var files = self.get('files');
     return _.filter(files,function(file){
@@ -25,17 +25,13 @@ Queue.prototype.getFile = function (id) {
     })[0];
 };
 
-Queue.prototype.getIds = function(status){
+Queue.prototype.getFilesByStatus = function(status){
     var files = this.get("files");
     function matchStatus(file){
         return file.status == status;
     }
 
-    function getId(file){
-        return file.id;
-    }
-
-    return _.map(_.filter(files,matchStatus),getId);
+    return _.filter(files,matchStatus);
 };
 
 Queue.prototype.remove = function(id){
@@ -61,7 +57,7 @@ Queue.prototype.remove = function(id){
 }
 
 Queue.prototype.updateFileStatus = function(file,status){
-    file = this.getFile(file.id);
+    file = this.getFileById(file.id);
     if(file){
         file.status = status;
     }

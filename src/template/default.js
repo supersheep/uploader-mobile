@@ -37,7 +37,7 @@ Template.prototype._createItem = function(event){
     var item = $(_.template(this.get('tpl'),file));
     item.find(".remove").on("click",function(){
         var uploader = self.get("uploader");
-        uploader.get("queue").remove(file.id);
+        uploader.remove(file.id);
     });
     file.block = item;
     item.appendTo(container);
