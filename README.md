@@ -1,6 +1,6 @@
 # uploader
 
-> 文件上传组件
+> File Upload Component
 
 
 ###APIs
@@ -11,94 +11,66 @@ construct an uploader with the passing elemement
 
 ####config
 
-- `config.action` url to upload
-- `config.blah` blah blah
+- `action` url to upload
+- `theme` theme for process and show items
+- `multipleLen` maximum len of multi length select, exceed will be cut
+- `name` name for file field
+- `queueTarget` container to put queue items
 
-####.upload(index)
+####.upload(id)
 
-upload file in `index` of the queue
+upload file in `id` of the queue
 
-####.cancel(index)
+####.remove(id)
 
-cancel file in `index` of the queue, or the current uploading file
-
-####.remove(index)
-
-remove file in `index` of the queue
-
-####.stop
-
-stop uploading
-
+remove file in `id` of the queue
 
 ###Events
 
 #### select
 
-选择完文件后触发
+emits after file selected
 
-- `ev.files` 文件完文件后返回的文件数据
+- `ev.files` Array<Files> files selected by user
 
 #### add
 
-向队列添加文件后触发
+emits after file added to queue
 
-- `ev.index` 文件在队列中的索引值
-- `ev.file` 文件数据
+- `ev.file` File
 
 #### start
 
-开始上传后触发
+emits after file start to upload
 
-- `ev.index` 要上传的文件在队列中的索引值
-- `ev.file` 文件数据
+- `ev.file` File
 
 #### progress
 
-正在上传中时触发，这个事件在iframe上传方式中不存在
+emits on file progressing
 
-- `ev.file` 文件数据
-- `ev.loaded`  已经加载完成的字节数
-- `ev.total`  文件总字节数
-
-#### complete
-
-上传成功后触发
-
-- `ev.index` 上传中的文件在队列中的索引值
-- `ev.file` 文件数据
-- `ev.result` 服务器返回的数据
+- `ev.file` File
+- `ev.loaded` byte loaded
+- `ev.total`  total bytes
 
 #### success
 
-上传成功后触发
+emits on file upload success
 
-- `ev.index` 上传中的文件在队列中的索引值
-- `ev.file` 文件数据
-- `ev.result` 服务器返回的数据
-
-### cancel
-
-取消上传后触发
-
-- `ev.index` 上传中的文件在队列中的索引值
+- `ev.file` File
+- `ev.data` json data responsed from server
 
 #### error
-    
-发生错误时触发
 
-- `ev.index` 上传中的文件在队列中的索引值
-- `ev.file` 文件数据
-- `ev.result` 服务器端返回的数据
-- `ev.status` 服务器端返回的状态码，status如果是-1，说明是前端验证返回的失败
+emits on error occurs
 
-#### queueComplete
-
-批量上传成功后触发
+- `ev.file` File
+- `ev.code` Error code
+- `ev.message` Error message
+- `ev.data` json data that server responsed
 
 #### remove
 
-从队列中删除文件后触发
+emits when file removed from queue
 
-- `ev.index` 文件在队列中的索引值
-- `ev.file` 文件数据
+- `ev.file` File
