@@ -33,7 +33,6 @@ function FlashUploader(elem, config){
             self.emit("load");
         },
         file_dialog_complete_handler:function(numFilesSelected, numFilesQueued, numFilesInQueue){
-            console.log(arguments);
             var files = [];
             var stats = this.getStats();
             var total = _.reduce(_.values(stats),function(a,b){
@@ -42,11 +41,6 @@ function FlashUploader(elem, config){
             for(var i = total - numFilesSelected; i < total; i++){
                 files.push(this.getFile(i));
             }
-
-
-            console.log("stats",stats);
-            console.log("total",total);
-            console.log("args",arguments);
 
             if(files.length){
                 self.emit("select",{
@@ -60,11 +54,8 @@ function FlashUploader(elem, config){
             });
         },
         file_queued_handler:function(file){
-            console.log("queued",file);
         },
         file_queue_error_handler:function(file,code,message){
-
-            console.log("queued error",file);
         },
         upload_progress_handler:function(file,uploaded,total){
             self.emit("progress",{
@@ -150,8 +141,11 @@ FlashUploader.instanceCount = 0;
 
 
 FlashUploader.prototype.upload = function(indexOrId){
-
     this.swfu.startUpload(indexOrId);
+}
+
+FlashUploader.prototype.setData = function(data){
+    this.swfu.setPostParams(data);
 }
 
 FlashUploader.prototype.cancel = function(){

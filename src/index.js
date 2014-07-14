@@ -22,6 +22,11 @@ function Uploader(element,config){
     var self = this;
 
     this.type = config.type || "flash";
+
+    this.set('autoUpload',config.autoUpload);
+    this.set('queueTarget',config.queueTarget);
+    this.set('data',config.data);
+
     var adapter = new adapters[this.type](element,config);
 
     // 初始化上传队列
@@ -30,28 +35,30 @@ function Uploader(element,config){
 
     adapter.on("load",function(){
         self.emit("load");
-    })
+    });
 
     adapter.on("select",function(e){
         var queue = self.get('queue'),
-            curId = self.get('currentIndex'),
+            curId = self.get('currentId'),
             files = e.files;
 
         files = self._processExceedMultiple(files);
         self.emit("select",{files:files});
 
-        console.log("e.files.....",e.files);
         _.forEach(e.files,function(file){
             queue.add(file);
         });
         if (!curId && self.get('autoUpload')) {
-            self.upload(queue.getIds("waiting")[0]);
+            self.upload();
         }
+    });
+
+    adapter.on('start',function(e){
+        self.set('currentId',e.file.id);
     });
 
     adapter.on("progress",function(e){
         var queue = self.get("queue");
-        console.log("e.file",e.file);
         queue.updateFileStatus(e.file,"progress");
         self.emit("progress",e);
     });
@@ -73,16 +80,20 @@ function Uploader(element,config){
     self.on("complete",function(e){
         var queue = self.get("queue");
         var file = e.file;
-        self._continue();
+        if(self.get("autoUpload")){
+            self._continue();
+        }
     });
 
     this.set("adapter",adapter);
 
-    this.theme(new Theme("#queue"));
+    this._theme(new Theme(this.get('queueTarget')));
 }
 
 util.inherits(Uploader,events);
 attributes.patch(Uploader,{
+    queueTarget:{value:'#queue'},
+    data:{value:{}},
     /**
      * 是否自动上传
      * @type Boolean
@@ -108,19 +119,24 @@ attributes.patch(Uploader,{
      */
     multipleLen:{value:-1},
     /**
-     *  当前上传的文件对应的在数组内的索引值，如果没有文件正在上传，值为空
+     *  当前上传的文件对应的在数组内的Id，如果没有文件正在上传，值为空
      *  @type Number
      *  @default ""
      */
-    currentIndex:{value:''},
+    currentId:{value:''},
     isAllowUpload:{value:true},
     isSuccess:{value:function(){return true;}}
 });
 
 Uploader.prototype.upload = function(id){
-    var type = this.type = this._getType();
     this.emit("start");
-    this.get("adapter").upload(id);
+    var adapter = this.get("adapter");
+    if(!id){
+        this._continue();
+    }else{
+        adapter.setData(this.get("data"));
+        adapter.upload(id);
+    }
 }
 
 
@@ -142,7 +158,7 @@ Uploader.prototype._initQueue = function () {
 };
 
 
-Uploader.prototype.theme = function(theme){
+Uploader.prototype._theme = function(theme){
     var self = this;
     var queue = this.get('queue');
     theme.set('uploader',self);
@@ -171,7 +187,12 @@ Uploader.prototype._processExceedMultiple = function (files) {
 
 Uploader.prototype._continue = function(){
     var queue = this.get("queue");
-    this.upload(queue.getIds("waiting")[0]);
+    var id = queue.getIds("waiting")[0];
+    if(id){
+        this.upload(id);
+    }else{
+        this.set('currentId',null);
+    }
 }
 
 Uploader.prototype._getType = function(){
