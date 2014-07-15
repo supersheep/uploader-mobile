@@ -16,14 +16,13 @@ var adapters = {
 
 
 function Uploader(element,config){
-
-    var Theme = config.theme || require("./template/default");
+    var theme = config.theme || require("./theme/default");
     var self = this;
 
     this.type = config.type || "flash";
 
     this.set('autoUpload',config.autoUpload);
-    this.set('queueTarget',config.queueTarget);
+    this.set('queueTarget',config.queueTarget || "#queue");
     this.set('beforeUpload',config.beforeUpload);
     this.set('data',config.data);
 
@@ -86,13 +85,18 @@ function Uploader(element,config){
 
     this.set("adapter",adapter);
 
-    this._theme(new Theme(this.get('queueTarget')));
+    this._theme(theme);
 }
 
 util.inherits(Uploader,events);
 attributes.patch(Uploader,{
-    queueTarget:{value:'#queue'},
+    queueTarget:{
+        setter: function(selector){
+            return $(selector);
+        }
+    },
     beforeUpload:{value:function(){}},
+    theme:{value:{}},
     data:{value:{}},
     /**
      * 是否自动上传
@@ -155,8 +159,8 @@ Uploader.prototype._upload = function(file){
     adapter.upload(file);
 }
 
-Uploader.prototype.remove = function(id){
-    this.get("queue").remove(id);
+Uploader.prototype.remove = function(file){
+    this.get("queue").remove(file);
 }
 
 Uploader.prototype._initQueue = function () {
@@ -176,19 +180,36 @@ Uploader.prototype._initQueue = function () {
     return queue;
 };
 
+Uploader.prototype._createItem = function (event) {
+  var self = this;
+  var container = this.get('queueTarget');
+  var file = event.file;
+  var item = $(_.template(this.get('theme').template, file));
+  item.attr('id', 'J_upload_item_' + file.id);
+  item.appendTo(container);
+
+  item.find(".J_upload_remove").on("click", function () {
+    self.remove(file);
+  });
+};
 
 Uploader.prototype._theme = function(theme){
     var self = this;
     var queue = this.get('queue');
-    theme.set('uploader',self);
+    this.set('theme',theme);
+
+
     self.on('add',function(file){
-        theme._createItem(file);
+        self._createItem(file);
     });
 
     _.forEach(['load','add','remove','start','progress','success','error','complete'],function(ev){
         self.on(ev,function(e){
-            var func = theme["_" + ev + "Handler"];
-            func && func.call(self,e);;
+            var func = theme[ev];
+            if(e && _.isObject(e) && e.file){
+                e.elem = $("#J_upload_item_" + e.file.id);
+            }
+            func && func.call(self,e);
         });
     });
 }

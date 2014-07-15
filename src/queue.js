@@ -34,8 +34,9 @@ Queue.prototype.getFilesByStatus = function(status){
     return _.filter(files,matchStatus);
 };
 
-Queue.prototype.remove = function(id){
+Queue.prototype.remove = function(file){
     var files = this.get("files");
+    var id = file.id
     if(!files){return;}
     if(!id){id = files[0].id}
     var new_files = [];
