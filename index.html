@@ -119,7 +119,10 @@
                 isSuccess:function(data){
                     return data.code == 200;
                 },
-                // theme: require('...')
+                data:{
+                    "a":"foo",
+                    "b":"bar"
+                },
                 swf_config:{
                     flash_url:"http://127.0.0.1:1234/res/swfupload2.5.swf"
                 }

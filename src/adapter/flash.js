@@ -4,27 +4,10 @@ var events = require("events");
 var _ = require("underscore");
 var util = require("util");
 var JSON = require("json");
-var attributes = require("attributes");
-
-var ERRORS = {
-    "-200" : "HTTP_ERROR"                  ,
-    "-210" : "MISSING_UPLOAD_URL"          ,
-    "-220" : "IO_ERROR"                    ,
-    "-230" : "SECURITY_ERROR"              ,
-    "-240" : "UPLOAD_LIMIT_EXCEEDED"       ,
-    "-250" : "UPLOAD_FAILED"               ,
-    "-260" : "SPECIFIED_FILE_ID_NOT_FOUND" ,
-    "-270" : "FILE_VALIDATION_FAILED"      ,
-    "-280" : "FILE_CANCELLED"              ,
-    "-290" : "UPLOAD_STOPPED"              ,
-    "-300" : "JSON_PARSE_FAILED"           ,
-    "-310" : "CUSTOM_DEFINED_ERROR"
-};
-
+var Errors = require("./errors");
 var default_options = require("./flash_default_options");
 
 module.exports = FlashUploader;
-FlashUploader.errors = ERRORS;
 function FlashUploader(elem, config){
     var self = this;
     var isSuccess = _.isFunction(config.isSuccess) ? config.isSuccess : function(){return true;};
@@ -137,9 +120,7 @@ function FlashUploader(elem, config){
 };
 
 util.inherits(FlashUploader,events);
-attributes.patch(FlashUploader,{
-    upload:{value:{}},
-});
+
 FlashUploader.instanceCount = 0;
 
 

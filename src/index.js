@@ -19,7 +19,7 @@ function Uploader(element,config){
     var theme = config.theme || require("./theme/default");
     var self = this;
 
-    this.type = config.type || "flash";
+    this.type = config.type || this._getType();
 
     this.set('autoUpload',config.autoUpload);
     this.set('queueTarget',config.queueTarget || "#queue");
@@ -27,7 +27,6 @@ function Uploader(element,config){
     this.set('data',config.data);
 
     var adapter = new adapters[this.type](element,config);
-    adapter.set("uploader", this);
     // 初始化上传队列
 
     this._initQueue();
@@ -236,6 +235,6 @@ Uploader.prototype._continue = function(){
 }
 
 Uploader.prototype._getType = function(){
-    return "flash";
+    return "ajax";
 }
 

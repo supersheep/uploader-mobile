@@ -17,6 +17,12 @@ upload.get('/crossdomain.xml', function(req, res){
 
 var count = 0;
 upload.all('/',multipart(),function(req,res){
+    res.header('Access-Control-Allow-Origin','*');
+
+    if(req.method.toLowerCase() == 'options'){
+        return res.send('ok');
+    }
+
     var file = req.files.key;
     var tmp_path = file.path;
     var target_path = './res/' + file.name;
@@ -42,7 +48,7 @@ upload.all('/',multipart(),function(req,res){
                     path: "/res/" + file.name,
                     size: file.size
                 });
-            },2000);
+            });
         });
     });
 });
