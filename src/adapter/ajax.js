@@ -59,7 +59,7 @@ AjaxUploader._renderButton = function (elem, config) {
 
 
 AjaxUploader.prototype.upload = function (file) {
-  var file = this.files.filter(function(file){
+  var file = _.filter(this.files,function(file){
     return file.status == "waiting";
   })[0];
 

@@ -102,7 +102,6 @@ function FlashUploader(elem, config){
         post_params: config.data || {},
         upload_url: config.action,
         // file_queue_limit : config.limit,
-        file_types:config.types || "*.jpg;*.png;*.bmp",
         button_placeholder_id: id,
         file_post_name: config.name || "file",
         button_width: elem.width(),
@@ -135,6 +134,13 @@ FlashUploader.prototype.setData = function(data){
 FlashUploader.prototype.cancel = function(){
 
 };
+
+FlashUploader.prototype.setFileTypes = function(extensions){
+    var types = _.map(extensions, function(ext){
+        return "*." + ext;
+    }).join(";");
+    this.swfu.setFileTypes(types, "Select Files");
+}
 
 FlashUploader._renderButton = function(elem){
 

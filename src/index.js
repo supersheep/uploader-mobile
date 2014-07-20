@@ -185,15 +185,25 @@ Uploader.prototype.auth = function(config){
     var allowExtensions = config.allowExtensions;
     var maxSize = config.maxSize;
 
+    allowExtensions
+    && self.type == "flash"
+    && self.on("load",function(){
+        self.get("adapter").setFileTypes(allowExtensions);
+    });
     this.on('add', function(e){
         var file = e.file;
         if(self._convertSizeUnit(maxSize) < file.size){
-            self.emit("error",{
+            return self.emit("error",{
                 file:file,
                 code: Errors.UPLOAD_FAILED,
                 message: "UPLOAD_FAILED"
             });
         }
+
+
+
+
+
     });
     return this;
 }
@@ -278,10 +288,10 @@ Uploader.prototype._continue = function(){
 }
 
 Uploader.prototype._getType = function(){
-    if (new XMLHttpRequest().upload) {
-        return "ajax";
-    } else {
+    // if (new XMLHttpRequest().upload) {
+    //     return "ajax";
+    // } else {
         return "flash";
-    }
+    // }
 }
 
