@@ -23,6 +23,7 @@ function Uploader(element,config){
 
     this.set('autoUpload',config.autoUpload);
     this.set('queueTarget',config.queueTarget || "#queue");
+    this.set('multipleLen',config.multipleLen || -1 );
     this.set('beforeUpload',config.beforeUpload);
     this.set('data',config.data);
 
@@ -43,7 +44,7 @@ function Uploader(element,config){
         files = self._processExceedMultiple(files);
         self.emit("select",{files:files});
 
-        _.forEach(e.files,function(file){
+        _.forEach(files,function(file){
             queue.add(file);
         });
         if (!curId && self.get('autoUpload')) {
@@ -217,9 +218,15 @@ Uploader.prototype._theme = function(theme){
  * 超过最大多选数予以截断
  */
 Uploader.prototype._processExceedMultiple = function (files) {
+    var filesArr = [];
     var self = this, multipleLen = self.get('multipleLen');
-    if (multipleLen < 0 || !_.isArray(files) || !files.length) return files;
-    return S.filter(files, function (file, index) {
+
+    for(var i = 0; i < files.length; i++){
+        filesArr.push(files[i]);
+    }
+
+    if (multipleLen < 0 || !filesArr.length) return filesArr;
+    return _.filter(filesArr, function (file, index) {
         return index < multipleLen;
     });
 };
@@ -235,6 +242,10 @@ Uploader.prototype._continue = function(){
 }
 
 Uploader.prototype._getType = function(){
-    return "ajax";
+    if (new XMLHttpRequest().upload) {
+        return "ajax";
+    } else {
+        return "flash";
+    }
 }
 
