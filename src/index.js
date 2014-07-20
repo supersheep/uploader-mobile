@@ -6,6 +6,7 @@ var $ = require("jquery");
 var Queue = require("./queue");
 var _ = require("underscore");
 var attributes = require("attributes");
+var Errors = require("./errors");
 
 module.exports = Uploader;
 
@@ -64,16 +65,22 @@ function Uploader(element,config){
     });
 
     adapter.on("success",function(e){
-        var queue = self.get("queue");
-        queue.updateFileStatus(e.file,"success");
         self.emit("success",e);
-        self.emit("complete",e);
     });
 
     adapter.on("error",function(e){
+        self.emit("error",e);
+    });
+
+    self.on("success",function(e){
+        var queue = self.get("queue");
+        queue.updateFileStatus(e.file,"success");
+        self.emit("complete",e);
+    });
+
+    self.on("error",function(e){
         var queue = self.get("queue");
         queue.updateFileStatus(e.file,"error");
-        self.emit("error",e);
         self.emit("complete",e);
     });
 
@@ -162,6 +169,35 @@ Uploader.prototype._upload = function(file){
 Uploader.prototype.remove = function(file){
     this.get("queue").remove(file);
 }
+
+Uploader.prototype._convertSizeUnit = function(size){
+    var match = size.match(/(\d+)(\w)/);
+    var count = match[1];
+    var unit = match[2];
+    var units = ["K","M","G"];
+    return count * Math.pow(1024, units.indexOf(unit) + 1);
+}
+
+
+Uploader.prototype.auth = function(config){
+    var self = this;
+    var maxItems = config.maxItems;
+    var allowExtensions = config.allowExtensions;
+    var maxSize = config.maxSize;
+
+    this.on('add', function(e){
+        var file = e.file;
+        if(self._convertSizeUnit(maxSize) < file.size){
+            self.emit("error",{
+                file:file,
+                code: Errors.UPLOAD_FAILED,
+                message: "UPLOAD_FAILED"
+            });
+        }
+    });
+    return this;
+}
+
 
 Uploader.prototype._initQueue = function () {
     var self = this, queue = new Queue();

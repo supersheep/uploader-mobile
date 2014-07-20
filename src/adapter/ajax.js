@@ -4,7 +4,7 @@ var util = require('util');
 var events = require('events');
 var attributes = require('attributes');
 var _ = require('underscore');
-var Errors = require('./errors');
+var Errors = require('../errors');
 var uuid = 0;
 module.exports = AjaxUploader;
 
@@ -59,7 +59,9 @@ AjaxUploader._renderButton = function (elem, config) {
 
 
 AjaxUploader.prototype.upload = function (file) {
-  var file = this.files[0];
+  var file = this.files.filter(function(file){
+    return file.status == "waiting";
+  })[0];
 
   var config = this.get('config');
   var data = this.get('data');
