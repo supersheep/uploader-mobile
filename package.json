@@ -1,7 +1,7 @@
 {
   "name": "uploader",
   "description": "文件上传组件",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/supersheep/uploader",
   "author": {
     "name": "supersheep",
@@ -47,7 +47,10 @@
       "swfuploader": "~0.1.0",
       "underscore": "~1.6.0",
       "attributes": "~1.4.0",
-      "json": "~1.0.1"
-    }
+      "json": "~1.0.1",
+      "simple-mime": "^0.0.8"
+    },
+    "directories": {},
+    "engines": {}
   }
 }

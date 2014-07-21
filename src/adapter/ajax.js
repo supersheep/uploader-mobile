@@ -4,6 +4,7 @@ var util = require('util');
 var events = require('events');
 var attributes = require('attributes');
 var _ = require('underscore');
+var mime = require('simple-mime')('application/octect-stream');
 var Errors = require('../errors');
 var uuid = 0;
 module.exports = AjaxUploader;
@@ -15,22 +16,28 @@ module.exports = AjaxUploader;
  * @requires UploadType
  */
 function AjaxUploader(elem, config) {
-  var self = this;
   elem = $(elem);
-  var btn = AjaxUploader._renderButton(elem);
+  var self = this;
+  var btn = this._btn = AjaxUploader._renderButton(elem);
 
   this.files = [];
   this.set('config', config);
+  btn.on('click',function(){
+    if(self.get("isDisabled")){
+      return false;
+    }
+  });
   btn.on('change', function (e) {
     for (var i = 0; i < this.files.length; i++) {
       var file = this.files[i];
       file.id = uuid++;
       self.files.push(file);
     }
-    self.emit('select', {
-      files: this.files
-    });
 
+    self.emit('select', {
+      files: self.files
+    });
+    btn.val("");
   });
 
   setTimeout(function () {
@@ -55,8 +62,19 @@ AjaxUploader._renderButton = function (elem, config) {
   });
   btn.appendTo(elem);
   return btn;
-}
+};
 
+
+AjaxUploader.prototype.setDisabled = function(isDisabled){
+  this.set("isDisabled",isDisabled);
+};
+
+AjaxUploader.prototype.setFileTypes = function(extensions) {
+  var accept = _.map(extensions, function(ext){
+    return mime(ext);
+  }).join(",");
+  this._btn.attr("accept", accept);
+};
 
 AjaxUploader.prototype.upload = function (file) {
   var file = _.filter(this.files,function(file){
@@ -141,5 +159,8 @@ attributes.patch(AjaxUploader, {
   },
   data: {
     value: {}
+  },
+  isDisabled:{
+    value: false
   }
 });

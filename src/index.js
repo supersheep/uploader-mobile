@@ -136,6 +136,7 @@ attributes.patch(Uploader,{
      * @default -1
      */
     multipleLen:{value:-1},
+    maxItems:{value:-1},
     /**
      *  当前上传的文件对应的在数组内的Id，如果没有文件正在上传，值为空
      *  @type Number
@@ -183,27 +184,37 @@ Uploader.prototype.auth = function(config){
     var self = this;
     var maxItems = config.maxItems;
     var allowExtensions = config.allowExtensions;
-    var maxSize = config.maxSize;
+    var maxSize = config.maxSize || -1;
+    var adapter = this.get("adapter");
+
+    maxItems && self.set("maxItems",maxItems);
 
     allowExtensions
-    && self.type == "flash"
     && self.on("load",function(){
         self.get("adapter").setFileTypes(allowExtensions);
     });
+
     this.on('add', function(e){
         var file = e.file;
-        if(self._convertSizeUnit(maxSize) < file.size){
+        if(maxSize > 0 && self._convertSizeUnit(maxSize) < file.size){
             return self.emit("error",{
                 file:file,
                 code: Errors.UPLOAD_FAILED,
                 message: "UPLOAD_FAILED"
             });
         }
+    });
 
+    this.on('success', function(){
+        if(self.reachMax()){
+            adapter.setDisabled(true)
+        }
+    });
 
-
-
-
+    this.on("remove", function(){
+        if(!self.reachMax()){
+            adapter.setDisabled(false)
+        }
     });
     return this;
 }
@@ -241,10 +252,7 @@ Uploader.prototype._createItem = function (event) {
 
 Uploader.prototype._theme = function(theme){
     var self = this;
-    var queue = this.get('queue');
     this.set('theme',theme);
-
-
     self.on('add',function(file){
         self._createItem(file);
     });
@@ -260,20 +268,32 @@ Uploader.prototype._theme = function(theme){
     });
 }
 
+Uploader.prototype._successCount = function(){
+    return this.get("queue").getFilesByStatus("success").length;
+}
+
+Uploader.prototype.reachMax = function(){
+    var maxItems = this.get("maxItems");
+    return maxItems <= this._successCount();
+}
+
 /**
  * 超过最大多选数予以截断
  */
 Uploader.prototype._processExceedMultiple = function (files) {
-    var filesArr = [];
-    var self = this, multipleLen = self.get('multipleLen');
+    // var filesArr = [];
+    var self = this,
+        multipleLen = self.get('multipleLen'),
+        maxItems = self.get("maxItems"),
+        succeeded = self._successCount();
 
-    for(var i = 0; i < files.length; i++){
-        filesArr.push(files[i]);
-    }
-
-    if (multipleLen < 0 || !filesArr.length) return filesArr;
-    return _.filter(filesArr, function (file, index) {
-        return index < multipleLen;
+    if (multipleLen < 0 || !files.length) return files;
+    return _.filter(files, function (file, index) {
+        if(maxItems < 0){
+            return index < multipleLen;
+        }else{
+            return index < multipleLen && index < maxItems - succeeded;
+        }
     });
 };
 
@@ -288,10 +308,10 @@ Uploader.prototype._continue = function(){
 }
 
 Uploader.prototype._getType = function(){
-    // if (new XMLHttpRequest().upload) {
-    //     return "ajax";
-    // } else {
-        return "flash";
-    // }
+    if (new XMLHttpRequest().upload) {
+        return "ajax";
+    } else {
+        return "ajax";
+    }
 }
 

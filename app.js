@@ -28,14 +28,14 @@ upload.all('/',multipart(),function(req,res){
     var target_path = './res/' + file.name;
 
     count++;
-    if(count%3 == 0){
-        return res.send(200,{
-            code: 500,
-            message: "something wrong happened"
-        });
-    }else if(count%3 == 1){
-        return res.send(500,"oops");
-    }
+    // if(count%3 == 0){
+    //     return res.send(200,{
+    //         code: 500,
+    //         message: "something wrong happened"
+    //     });
+    // }else if(count%3 == 1){
+    //     return res.send(500,"oops");
+    // }
     // move the file from the temporary location to the intended location
     fs.rename(tmp_path, target_path, function(err) {
         if (err) return res.send(500,err);

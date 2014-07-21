@@ -142,6 +142,11 @@ FlashUploader.prototype.setFileTypes = function(extensions){
     this.swfu.setFileTypes(types, "Select Files");
 }
 
+FlashUploader.prototype.setDisabled = function(isDisabled){
+    console.log("set disabled", isDisabled);
+    this.swfu.setButtonDisabled(isDisabled);
+}
+
 FlashUploader._renderButton = function(elem){
 
     var id = "swfu_holder_" + (FlashUploader.instanceCount+1);
