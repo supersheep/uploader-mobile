@@ -90,6 +90,14 @@ function Uploader(element,config){
         self._continue();
     });
 
+    self.on("enable",function(){
+        adapter.setDisabled(false);
+    });
+
+    self.on("disable",function(){
+        adapter.setDisabled(true);
+    });
+
     this.set("adapter",adapter);
 
     this._theme(theme);
@@ -207,13 +215,13 @@ Uploader.prototype.auth = function(config){
 
     this.on('success', function(){
         if(self.reachMax()){
-            adapter.setDisabled(true)
+            self.emit("disable");
         }
     });
 
     this.on("remove", function(){
         if(!self.reachMax()){
-            adapter.setDisabled(false)
+            self.emit("enable");
         }
     });
     return this;
