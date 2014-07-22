@@ -1,7 +1,7 @@
 {
   "name": "uploader",
-  "description": "文件上传组件",
-  "version": "0.1.1",
+  "description": "Upload files using ajax and flash fallback",
+  "version": "0.1.2",
   "homepage": "https://github.com/supersheep/uploader",
   "author": {
     "name": "supersheep",
@@ -43,14 +43,11 @@
       "jquery": "~1.9.1",
       "events": "~1.0.5",
       "util": "~1.0.4",
-      "swfuploader": "~0.1.0",
+      "swfupload": "~0.1.0",
       "underscore": "~1.6.0",
       "attributes": "~1.4.0",
       "json": "~1.0.1",
       "simple-mime": "^0.0.8"
-    },
-    "directories": {
-      "src":"res"
     },
     "engines": {}
   }

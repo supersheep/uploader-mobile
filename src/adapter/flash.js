@@ -1,5 +1,5 @@
 var $ = require("jquery");
-var SWFUpload = require("swfuploader");
+var SWFUpload = require("swfupload");
 var events = require("events");
 var _ = require("underscore");
 var util = require("util");

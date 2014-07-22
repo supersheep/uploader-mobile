@@ -317,10 +317,10 @@ Uploader.prototype._continue = function(){
 }
 
 Uploader.prototype._getType = function(){
-    // if (new XMLHttpRequest().upload) {
-    //     return "ajax";
-    // } else {
+    if (new XMLHttpRequest().upload) {
+        return "ajax";
+    } else {
         return "flash";
-    // }
+    }
 }
 

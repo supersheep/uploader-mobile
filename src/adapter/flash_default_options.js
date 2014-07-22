@@ -1,6 +1,5 @@
-var SWFUpload = require("swfuploader");
+var SWFUpload = require("swfupload");
 module.exports = {
-    flash_url : require.resolve("../../res/swfupload.swf"), // version 2.5
     post_params: {},
     file_size_limit : "100 MB",
     file_types_description : "All Files",
