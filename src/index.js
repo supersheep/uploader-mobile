@@ -296,13 +296,17 @@ Uploader.prototype._processExceedMultiple = function (files) {
         maxItems = self.get("maxItems"),
         succeeded = self._successCount();
 
-    if (multipleLen < 0 || !files.length) return files;
+    if ( (multipleLen < 0 && maxItems < 0 ) || !files.length) return files;
     return _.filter(files, function (file, index) {
         if(maxItems < 0){
             return index < multipleLen;
-        }else{
-            return index < multipleLen && index < maxItems - succeeded;
         }
+
+        if(multipleLen < 0){
+            return index < maxItems - succeeded;
+        }
+
+        return index < multipleLen && index < maxItems - succeeded;
     });
 };
 

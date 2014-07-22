@@ -115,7 +115,6 @@
         _use("uploader",function(Uploader){
             var uploader = new Uploader("#uploader_wrap",{
                 action:"http://127.0.0.1:1339",
-                multipleLen:3,
                 name:"key",
                 isSuccess:function(data){
                     return data.code == 200;
