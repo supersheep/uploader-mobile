@@ -1,6 +1,6 @@
 var SWFUpload = require("swfuploader");
 module.exports = {
-    flash_url : "http://www.dianping.com/shoppic/res/swfupload.swf",
+    flash_url : require.resolve("../../res/swfupload.swf"), // version 2.5
     post_params: {},
     file_size_limit : "100 MB",
     file_types_description : "All Files",

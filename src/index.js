@@ -100,6 +100,7 @@ function Uploader(element,config){
 
     this.set("adapter",adapter);
 
+    this._auth(config);
     this._theme(theme);
 }
 
@@ -188,7 +189,7 @@ Uploader.prototype._convertSizeUnit = function(size){
 }
 
 
-Uploader.prototype.auth = function(config){
+Uploader.prototype._auth = function(config){
     var self = this;
     var maxItems = config.maxItems;
     var allowExtensions = config.allowExtensions;
@@ -316,10 +317,10 @@ Uploader.prototype._continue = function(){
 }
 
 Uploader.prototype._getType = function(){
-    if (new XMLHttpRequest().upload) {
-        return "ajax";
-    } else {
-        return "ajax";
-    }
+    // if (new XMLHttpRequest().upload) {
+    //     return "ajax";
+    // } else {
+        return "flash";
+    // }
 }
 

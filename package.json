@@ -50,7 +50,9 @@
       "json": "~1.0.1",
       "simple-mime": "^0.0.8"
     },
-    "directories": {},
+    "directories": {
+      "src":"res"
+    },
     "engines": {}
   }
 }
