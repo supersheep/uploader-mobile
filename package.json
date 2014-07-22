@@ -41,7 +41,6 @@
     "scripts": {},
     "dependencies": {
       "jquery": "~1.9.1",
-      "request": "~0.2.4",
       "events": "~1.0.5",
       "util": "~1.0.4",
       "swfuploader": "~0.1.0",
