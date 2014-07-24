@@ -159,9 +159,11 @@ attributes.patch(Uploader,{
 Uploader.prototype.upload = function(file){
     var self = this;
     var beforeUpload = this.get('beforeUpload');
+
     if(!file){
         this._continue();
     }else{
+        file.ext = "." + _.chain(file.name.split(".")).reverse().value()[0];
         if(beforeUpload){
             beforeUpload.call(self, file, _.bind(this._upload,this,file));
         }else{
