@@ -44,7 +44,7 @@
       "events": "~1.0.5",
       "util": "~1.0.4",
       "swfupload": "~0.1.0",
-      "underscore": "~1.6.0",
+      "underscore": "~1.5.2",
       "attributes": "~1.4.0",
       "json": "~1.0.1",
       "simple-mime": "^0.0.8"
