@@ -2,7 +2,7 @@
 
 var events = require("events");
 var util = require("util");
-var $ = require("jquery");
+var $ = require("zepto");
 var Queue = require("./queue");
 var _ = require("underscore");
 var attributes = require("attributes");
@@ -11,7 +11,6 @@ var Errors = require("./errors");
 module.exports = Uploader;
 
 var adapters = {
-    flash : require("./adapter/flash"),
     ajax : require("./adapter/ajax")
 };
 
@@ -323,10 +322,6 @@ Uploader.prototype._continue = function(){
 }
 
 Uploader.prototype._getType = function(){
-    if (new XMLHttpRequest().upload) {
-        return "ajax";
-    } else {
-        return "flash";
-    }
+    return "ajax";
 }
 

@@ -1,5 +1,5 @@
 var EMPTY = '';
-var $ = require('jquery');
+var $ = require('zepto');
 var util = require('util');
 var events = require('events');
 var attributes = require('attributes');
