@@ -50,7 +50,7 @@ util.inherits(AjaxUploader, events);
 
 AjaxUploader._renderButton = function (elem, config) {
   var self = this;
-  var btn = $("<input multiple type='file' />");
+  var btn = $("<input multiple capture='camera' type='file' />");
   elem.css("position", "relative");
   btn.css({
     "position": "absolute",
