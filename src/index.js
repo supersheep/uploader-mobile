@@ -103,6 +103,9 @@ function Uploader(element,config){
     this._theme(theme);
 }
 
+Uploader.addAdapter = function(name, adapter){
+    adapters[name] = adapter;
+}
 util.inherits(Uploader,events);
 attributes.patch(Uploader,{
     queueTarget:{
